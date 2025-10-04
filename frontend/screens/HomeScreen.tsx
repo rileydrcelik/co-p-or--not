@@ -102,13 +102,6 @@ export default function HomeScreen() {
           />
         )}
       </View>
-
-      {/* Bottom Nav */}
-      <View style={styles.bottomNav}>
-        <Ionicons name="menu" size={28} color="white" />
-        <Ionicons name="home" size={28} color="white" />
-        <Ionicons name="map" size={28} color="white" />
-      </View>
     </SafeAreaView>
   );
 }
@@ -189,13 +182,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginVertical: 6,
-  },
-
-  // ---- Bottom Nav ----
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#2a2232",
-    paddingVertical: 12,
   },
 });

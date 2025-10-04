@@ -1,15 +1,15 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import HomeScreen from '../screens/HomeScreen';
+import StatsScreen from '../screens/StatsScreen';
 import BottomNavigationBar from '../components/BottomNavigationBar';
 
-export default function App() {
+export default function StatsPage() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <HomeScreen />
+        <StatsScreen />
       </View>
-      <BottomNavigationBar currentScreen="home" />
+      <BottomNavigationBar currentScreen="stats" />
     </View>
   );
 }

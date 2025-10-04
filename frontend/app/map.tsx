@@ -1,15 +1,15 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import HomeScreen from '../screens/HomeScreen';
+import MapScreen from '../screens/MapScreen';
 import BottomNavigationBar from '../components/BottomNavigationBar';
 
-export default function App() {
+export default function MapPage() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <HomeScreen />
+        <MapScreen />
       </View>
-      <BottomNavigationBar currentScreen="home" />
+      <BottomNavigationBar currentScreen="map" />
     </View>
   );
 }
