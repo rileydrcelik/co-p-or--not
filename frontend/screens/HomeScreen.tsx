@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import {
   View,
-  Text,
   TouchableOpacity,
   FlatList,
   StyleSheet,
   SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // for bottom nav icons
+import CustomText from "../components/CustomText";
 
 type ReportStatus = "Cop" | "Not";
 
@@ -48,11 +48,11 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Church Avenue</Text>
+        <CustomText style={styles.title} bold>Church Avenue</CustomText>
         <View style={styles.badges}>
-          <Text style={[styles.badge, { backgroundColor: "green" }]}>G</Text>
-          <Text style={[styles.badge, { backgroundColor: "orange" }]}>M</Text>
-          <Text style={[styles.badge, { backgroundColor: "darkorange" }]}>F</Text>
+          <CustomText style={[styles.badge, { backgroundColor: "green" }]} bold>G</CustomText>
+          <CustomText style={[styles.badge, { backgroundColor: "orange" }]} bold>M</CustomText>
+          <CustomText style={[styles.badge, { backgroundColor: "darkorange" }]} bold>F</CustomText>
         </View>
       </View>
 
@@ -62,23 +62,23 @@ export default function HomeScreen() {
           style={[styles.button, { backgroundColor: "blue" }]}
           onPress={() => report("Cop")}
         >
-          <Text style={styles.buttonText}>Cop</Text>
+          <CustomText style={styles.buttonText} bold>Cop</CustomText>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, { backgroundColor: "red" }]}
           onPress={() => report("Not")}
         >
-          <Text style={styles.buttonText}>Not</Text>
+          <CustomText style={styles.buttonText} bold>Not</CustomText>
         </TouchableOpacity>
       </View>
 
       {/* Percentage & History */}
       <View style={styles.historyBox}>
-        <Text style={styles.copPercent}>Cop: {copPercentage}%</Text>
+        <CustomText style={styles.copPercent} bold>Cop: {copPercentage}%</CustomText>
 
         {history.length === 0 ? (
-          <Text style={{ color: "gray", marginTop: 8 }}>No reports yet.</Text>
+          <CustomText style={{ color: "gray", marginTop: 8 }}>No reports yet.</CustomText>
         ) : (
           <FlatList
             data={history}
@@ -86,17 +86,17 @@ export default function HomeScreen() {
             renderItem={({ item }) => (
               <View style={styles.historyItem}>
                 <View>
-                  <Text style={{ color: "white" }}>{item.time}</Text>
-                  <Text style={{ color: "gray", fontSize: 12 }}>{item.date}</Text>
+                  <CustomText style={{ color: "white" }}>{item.time}</CustomText>
+                  <CustomText style={{ color: "gray", fontSize: 12 }}>{item.date}</CustomText>
                 </View>
-                <Text
+                <CustomText
                   style={{
                     color: item.status === "Cop" ? "skyblue" : "tomato",
-                    fontWeight: "bold",
                   }}
+                  bold
                 >
                   {item.status}
-                </Text>
+                </CustomText>
               </View>
             )}
           />
@@ -131,7 +131,6 @@ const styles = StyleSheet.create({
   title: {
     color: "white",
     fontSize: 40,
-    fontWeight: "bold",
     flexShrink: 1,                  // prevents title from pushing badges off
   },
 
@@ -144,7 +143,6 @@ const styles = StyleSheet.create({
 
   badge: {
     color: "white",
-    fontWeight: "bold",
     fontSize: 40,
     borderRadius: 25, //10
   paddingHorizontal: 18,//15
@@ -171,7 +169,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "white",
     fontSize: 55,
-    fontWeight: "bold",
   },
 
   // ---- History ----
@@ -185,7 +182,6 @@ const styles = StyleSheet.create({
 
   copPercent: {
     fontSize: 50,
-    fontWeight: "bold",
     color: "skyblue",
   },
 
