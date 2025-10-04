@@ -25,17 +25,27 @@ import FiveTrain from "../assets/train_icons/FiveTrain";
 import SixTrain from "../assets/train_icons/SixTrain";
 import SevenTrain from "../assets/train_icons/SevenTrain";
 
-interface Vote {
-  time: string;
-  date: string;
-  status: "Cop" | "Not";
+// Interface matching the Report.js database schema
+interface Report {
+  _id: string;
+  presence: boolean; // true = "Cop", false = "Not"
+  station: {
+    name: string;
+    coordinates: {
+      latitude: number;
+      longitude: number;
+    };
+  };
+  reportedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface StationCardProps {
   id: string;
   name: string;
   lines: string[];
-  votes: Vote[];
+  reports: Report[];
 }
 
 // Map train lines to their corresponding icon components
@@ -64,13 +74,19 @@ const trainIcons: { [key: string]: React.ComponentType<any> } = {
   "Z": ZTrain,
 };
 
-export default function StationCard({ id, name, lines, votes }: StationCardProps) {
+export default function StationCard({ id, name, lines, reports }: StationCardProps) {
   const getTrainIcon = (line: string) => {
     return trainIcons[line] || null;
   };
 
-  const getVoteColor = (status: "Cop" | "Not") => {
-    return status === "Cop" ? "#4A9EFF" : "#FF6B6B";
+  const getVoteColor = (presence: boolean) => {
+    return presence ? "#4A9EFF" : "#FF6B6B";
+  };
+
+  const formatDateTime = (date: Date) => {
+    const time = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    const dateStr = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    return { time, date: dateStr };
   };
 
   return (
@@ -103,26 +119,29 @@ export default function StationCard({ id, name, lines, votes }: StationCardProps
       {/* Divider */}
       <View style={styles.divider} />
 
-      {/* Recent Votes */}
+      {/* Recent Reports */}
       <View style={styles.votesContainer}>
-        {votes.length === 0 ? (
-          <Text style={styles.noVotesText}>No recent votes</Text>
+        {reports.length === 0 ? (
+          <Text style={styles.noVotesText}>No recent reports</Text>
         ) : (
-          votes.map((vote, index) => (
-            <View key={index} style={styles.voteItem}>
-              <Text style={styles.voteTime}>
-                {vote.time} • {vote.date}
-              </Text>
-              <Text
-                style={[
-                  styles.voteStatus,
-                  { color: getVoteColor(vote.status) },
-                ]}
-              >
-                {vote.status}
-              </Text>
-            </View>
-          ))
+          reports.map((report, index) => {
+            const { time, date } = formatDateTime(report.reportedAt);
+            return (
+              <View key={report._id} style={styles.voteItem}>
+                <Text style={styles.voteTime}>
+                  {time} • {date}
+                </Text>
+                <Text
+                  style={[
+                    styles.voteStatus,
+                    { color: getVoteColor(report.presence) },
+                  ]}
+                >
+                  {report.presence ? "Cop" : "Not"}
+                </Text>
+              </View>
+            );
+          })
         )}
       </View>
     </View>

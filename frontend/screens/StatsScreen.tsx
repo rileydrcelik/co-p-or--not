@@ -9,71 +9,226 @@ import {
 import SearchBar from "../components/SearchBar";
 import StationCard from "../components/StationCard";
 
-interface Vote {
-  time: string;
-  date: string;
-  status: "Cop" | "Not";
+// Interface matching the Report.js database schema
+interface Report {
+  _id: string;
+  presence: boolean; // true = "Cop", false = "Not"
+  station: {
+    name: string;
+    coordinates: {
+      latitude: number;
+      longitude: number;
+    };
+  };
+  reportedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-interface Station {
+// Interface for grouped station data with train lines
+interface StationWithReports {
+  
   id: string;
   name: string;
   lines: string[];
-  votes: Vote[];
+  reports: Report[];
 }
 
-// Mock data - replace with real data from your backend
-const mockStations: Station[] = [
+// Mock data matching the database schema - replace with real data from your backend
+const mockReports: Report[] = [
   {
-    id: "1",
-    name: "Broad St",
-    lines: ["J", "Z"],
-    votes: [
-      { time: "5:23pm", date: "1/14/2025", status: "Cop" },
-      { time: "5:15pm", date: "1/14/2025", status: "Cop" },
-      { time: "5:01pm", date: "1/14/2025", status: "Not" },
-    ],
+    _id: "1",
+    presence: true,
+    station: {
+      name: "Broad St",
+      coordinates: { latitude: 40.7012, longitude: -73.9954 }
+    },
+    reportedAt: new Date("2025-01-14T22:23:00Z"),
+    createdAt: new Date("2025-01-14T22:23:00Z"),
+    updatedAt: new Date("2025-01-14T22:23:00Z")
   },
   {
-    id: "2",
-    name: "Church Ave",
-    lines: ["F", "G"],
-    votes: [
-      { time: "4:45pm", date: "1/14/2025", status: "Not" },
-      { time: "4:30pm", date: "1/14/2025", status: "Cop" },
-    ],
+    _id: "2",
+    presence: true,
+    station: {
+      name: "Broad St",
+      coordinates: { latitude: 40.7012, longitude: -73.9954 }
+    },
+    reportedAt: new Date("2025-01-14T22:15:00Z"),
+    createdAt: new Date("2025-01-14T22:15:00Z"),
+    updatedAt: new Date("2025-01-14T22:15:00Z")
   },
   {
-    id: "3",
-    name: "Times Sq-42 St",
-    lines: ["1", "2", "3", "7", "N", "Q", "R", "W"],
-    votes: [
-      { time: "4:20pm", date: "1/14/2025", status: "Cop" },
-      { time: "4:10pm", date: "1/14/2025", status: "Cop" },
-      { time: "4:05pm", date: "1/14/2025", status: "Not" },
-      { time: "3:55pm", date: "1/14/2025", status: "Cop" },
-    ],
+    _id: "3",
+    presence: false,
+    station: {
+      name: "Broad St",
+      coordinates: { latitude: 40.7012, longitude: -73.9954 }
+    },
+    reportedAt: new Date("2025-01-14T22:01:00Z"),
+    createdAt: new Date("2025-01-14T22:01:00Z"),
+    updatedAt: new Date("2025-01-14T22:01:00Z")
   },
   {
-    id: "4",
-    name: "Union Sq-14 St",
-    lines: ["4", "5", "6", "L", "N", "Q", "R", "W"],
-    votes: [
-      { time: "3:40pm", date: "1/14/2025", status: "Not" },
-      { time: "3:25pm", date: "1/14/2025", status: "Cop" },
-    ],
+    _id: "4",
+    presence: false,
+    station: {
+      name: "Church Ave",
+      coordinates: { latitude: 40.6455, longitude: -73.9795 }
+    },
+    reportedAt: new Date("2025-01-14T21:45:00Z"),
+    createdAt: new Date("2025-01-14T21:45:00Z"),
+    updatedAt: new Date("2025-01-14T21:45:00Z")
   },
   {
-    id: "5",
-    name: "Grand Central-42 St",
-    lines: ["4", "5", "6", "7"],
-    votes: [
-      { time: "3:15pm", date: "1/14/2025", status: "Cop" },
-      { time: "3:00pm", date: "1/14/2025", status: "Cop" },
-      { time: "2:45pm", date: "1/14/2025", status: "Not" },
-    ],
+    _id: "5",
+    presence: true,
+    station: {
+      name: "Church Ave",
+      coordinates: { latitude: 40.6455, longitude: -73.9795 }
+    },
+    reportedAt: new Date("2025-01-14T21:30:00Z"),
+    createdAt: new Date("2025-01-14T21:30:00Z"),
+    updatedAt: new Date("2025-01-14T21:30:00Z")
   },
+  {
+    _id: "6",
+    presence: true,
+    station: {
+      name: "Times Sq-42 St",
+      coordinates: { latitude: 40.7589, longitude: -73.9851 }
+    },
+    reportedAt: new Date("2025-01-14T21:20:00Z"),
+    createdAt: new Date("2025-01-14T21:20:00Z"),
+    updatedAt: new Date("2025-01-14T21:20:00Z")
+  },
+  {
+    _id: "7",
+    presence: true,
+    station: {
+      name: "Times Sq-42 St",
+      coordinates: { latitude: 40.7589, longitude: -73.9851 }
+    },
+    reportedAt: new Date("2025-01-14T21:10:00Z"),
+    createdAt: new Date("2025-01-14T21:10:00Z"),
+    updatedAt: new Date("2025-01-14T21:10:00Z")
+  },
+  {
+    _id: "8",
+    presence: false,
+    station: {
+      name: "Times Sq-42 St",
+      coordinates: { latitude: 40.7589, longitude: -73.9851 }
+    },
+    reportedAt: new Date("2025-01-14T21:05:00Z"),
+    createdAt: new Date("2025-01-14T21:05:00Z"),
+    updatedAt: new Date("2025-01-14T21:05:00Z")
+  },
+  {
+    _id: "9",
+    presence: true,
+    station: {
+      name: "Times Sq-42 St",
+      coordinates: { latitude: 40.7589, longitude: -73.9851 }
+    },
+    reportedAt: new Date("2025-01-14T20:55:00Z"),
+    createdAt: new Date("2025-01-14T20:55:00Z"),
+    updatedAt: new Date("2025-01-14T20:55:00Z")
+  },
+  {
+    _id: "10",
+    presence: false,
+    station: {
+      name: "Union Sq-14 St",
+      coordinates: { latitude: 40.7357, longitude: -73.9909 }
+    },
+    reportedAt: new Date("2025-01-14T20:40:00Z"),
+    createdAt: new Date("2025-01-14T20:40:00Z"),
+    updatedAt: new Date("2025-01-14T20:40:00Z")
+  },
+  {
+    _id: "11",
+    presence: true,
+    station: {
+      name: "Union Sq-14 St",
+      coordinates: { latitude: 40.7357, longitude: -73.9909 }
+    },
+    reportedAt: new Date("2025-01-14T20:25:00Z"),
+    createdAt: new Date("2025-01-14T20:25:00Z"),
+    updatedAt: new Date("2025-01-14T20:25:00Z")
+  },
+  {
+    _id: "12",
+    presence: true,
+    station: {
+      name: "Grand Central-42 St",
+      coordinates: { latitude: 40.7518, longitude: -73.9769 }
+    },
+    reportedAt: new Date("2025-01-14T20:15:00Z"),
+    createdAt: new Date("2025-01-14T20:15:00Z"),
+    updatedAt: new Date("2025-01-14T20:15:00Z")
+  },
+  {
+    _id: "13",
+    presence: true,
+    station: {
+      name: "Grand Central-42 St",
+      coordinates: { latitude: 40.7518, longitude: -73.9769 }
+    },
+    reportedAt: new Date("2025-01-14T20:00:00Z"),
+    createdAt: new Date("2025-01-14T20:00:00Z"),
+    updatedAt: new Date("2025-01-14T20:00:00Z")
+  },
+  {
+    _id: "14",
+    presence: false,
+    station: {
+      name: "Grand Central-42 St",
+      coordinates: { latitude: 40.7518, longitude: -73.9769 }
+    },
+    reportedAt: new Date("2025-01-14T19:45:00Z"),
+    createdAt: new Date("2025-01-14T19:45:00Z"),
+    updatedAt: new Date("2025-01-14T19:45:00Z")
+  }
 ];
+
+// Station to train lines mapping (this would come from a separate API or database table)
+const stationLinesMap: { [key: string]: string[] } = {
+  "Broad St": ["J", "Z"],
+  "Church Ave": ["F", "G"],
+  "Times Sq-42 St": ["1", "2", "3", "7", "N", "Q", "R", "W"],
+  "Union Sq-14 St": ["4", "5", "6", "L", "N", "Q", "R", "W"],
+  "Grand Central-42 St": ["4", "5", "6", "7"]
+};
+
+// Group reports by station and add train lines
+const groupReportsByStation = (reports: Report[]): StationWithReports[] => {
+  const stationMap = new Map<string, StationWithReports>();
+  
+  reports.forEach(report => {
+    const stationName = report.station.name;
+    
+    if (!stationMap.has(stationName)) {
+      stationMap.set(stationName, {
+        id: stationName.toLowerCase().replace(/\s+/g, '-'),
+        name: stationName,
+        lines: stationLinesMap[stationName] || [],
+        reports: []
+      });
+    }
+    
+    stationMap.get(stationName)!.reports.push(report);
+  });
+  
+  // Sort reports by reportedAt date (most recent first)
+  stationMap.forEach(station => {
+    station.reports.sort((a, b) => b.reportedAt.getTime() - a.reportedAt.getTime());
+  });
+  
+  return Array.from(stationMap.values());
+};
+
+const mockStations = groupReportsByStation(mockReports);
 
 
 export default function StatsScreen() {
@@ -112,7 +267,7 @@ export default function StatsScreen() {
             id={station.id}
             name={station.name}
             lines={station.lines}
-            votes={station.votes}
+            reports={station.reports}
           />
         ))}
       </ScrollView>
