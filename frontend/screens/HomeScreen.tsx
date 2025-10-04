@@ -1,13 +1,8 @@
 import React, { useState } from "react";
-import {
-  View,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // for bottom nav icons
-import CustomText from "../components/CustomText";
+import { StyleSheet, SafeAreaView } from "react-native";
+import Header from "../components/Header";
+import CopButtons from "../components/CopButtons";
+import ReportsBlock from "../components/ReportsBlock";
 
 type ReportStatus = "Cop" | "Not";
 
@@ -21,6 +16,10 @@ export default function HomeScreen() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [copCount, setCopCount] = useState(0);
   const [totalReports, setTotalReports] = useState(0);
+  
+  // Station configuration
+  const stationName = "Church Avenue";
+  const trainLines = ["G", "M", "F"];
 
   // Function to get timestamp
   const getCurrentTimestamp = () => {
@@ -46,62 +45,9 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <CustomText style={styles.title} bold>Church Avenue</CustomText>
-        <View style={styles.badges}>
-          <CustomText style={[styles.badge, { backgroundColor: "green" }]} bold>G</CustomText>
-          <CustomText style={[styles.badge, { backgroundColor: "orange" }]} bold>M</CustomText>
-          <CustomText style={[styles.badge, { backgroundColor: "darkorange" }]} bold>F</CustomText>
-        </View>
-      </View>
-
-      {/* Buttons */}
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: "blue" }]}
-          onPress={() => report("Cop")}
-        >
-          <CustomText style={styles.buttonText} bold>Cop</CustomText>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: "red" }]}
-          onPress={() => report("Not")}
-        >
-          <CustomText style={styles.buttonText} bold>Not</CustomText>
-        </TouchableOpacity>
-      </View>
-
-      {/* Percentage & History */}
-      <View style={styles.historyBox}>
-        <CustomText style={styles.copPercent} bold>Cop: {copPercentage}%</CustomText>
-
-        {history.length === 0 ? (
-          <CustomText style={{ color: "gray", marginTop: 8 }}>No reports yet.</CustomText>
-        ) : (
-          <FlatList
-            data={history}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.historyItem}>
-                <View>
-                  <CustomText style={{ color: "white" }}>{item.time}</CustomText>
-                  <CustomText style={{ color: "gray", fontSize: 12 }}>{item.date}</CustomText>
-                </View>
-                <CustomText
-                  style={{
-                    color: item.status === "Cop" ? "skyblue" : "tomato",
-                  }}
-                  bold
-                >
-                  {item.status}
-                </CustomText>
-              </View>
-            )}
-          />
-        )}
-      </View>
+      <Header stationName={stationName} trainLines={trainLines} />
+      <CopButtons onReport={report} />
+      <ReportsBlock copPercentage={copPercentage} history={history} />
     </SafeAreaView>
   );
 }
