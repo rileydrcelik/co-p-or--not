@@ -9,8 +9,16 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // for bottom nav icons
 
+type ReportStatus = "Cop" | "Not";
+
+interface HistoryItem {
+  time: string;
+  date: string;
+  status: ReportStatus;
+}
+
 export default function HomeScreen() {
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [copCount, setCopCount] = useState(0);
   const [totalReports, setTotalReports] = useState(0);
 
@@ -23,7 +31,7 @@ export default function HomeScreen() {
   };
 
   // Handle report
-  const report = (status) => {
+  const report = (status: ReportStatus) => {
     const { time, date } = getCurrentTimestamp();
     setHistory([{ time, date, status }, ...history]);
     setTotalReports(totalReports + 1);
