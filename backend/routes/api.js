@@ -8,7 +8,7 @@ const stationController = require('../controllers/stationController');
 router.post('/reports', reportController.createReport);
 router.get('/reports', reportController.getAllReports);
 router.get('/reports/presence/:presence', reportController.getReportsByPresence);
-router.get('/reports/station/:stationName', reportController.getReportsByStation);
+router.get('/reports/station/:stationId', reportController.getReportsByStation);
 router.get('/reports/:id', reportController.getReportById);
 
 router.get('/polylines', polylineController.getAllPolylines);

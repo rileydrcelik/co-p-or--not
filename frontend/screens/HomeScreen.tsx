@@ -27,9 +27,9 @@ export default function HomeScreen() {
   const [stationReports, setStationReports] = useState<Report[]>([]);
 
   // Fetch reports for the current station
-  const fetchStationReports = async (stationName: string) => {
+  const fetchStationReports = async (stationId: string) => {
     try {
-      const response = await fetchReportsByStation(stationName);
+      const response = await fetchReportsByStation(stationId);
       if (response.success) {
         setStationReports(response.data);
       }
@@ -61,7 +61,7 @@ export default function HomeScreen() {
         if (stationResponse.success) {
           setCurrentStation(stationResponse.data.station);
           // Fetch reports for this station
-          await fetchStationReports(stationResponse.data.station.name);
+          await fetchStationReports(stationResponse.data.station._id);
         } else {
           setError('Could not find nearest station');
         }
@@ -109,7 +109,7 @@ export default function HomeScreen() {
 
         // Refresh station reports to get updated data
         if (currentStation) {
-          await fetchStationReports(currentStation.name);
+          await fetchStationReports(currentStation._id);
         }
 
         console.log("Report submitted successfully");
@@ -184,7 +184,7 @@ export default function HomeScreen() {
         />
       )}
 
-      <ReportsBlock copPercentage={copPercentage} history={history} />
+      <ReportsBlock copPercentage={copPercentage} history={history} stationReports={stationReports} />
     </SafeAreaView>
   );
 }

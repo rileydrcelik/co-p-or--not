@@ -185,7 +185,7 @@ export default function StationCard({ id, name, lines, reports }: StationCardPro
         {reports.length === 0 ? (
           <Text style={styles.noVotesText}>No recent reports</Text>
         ) : (
-          reports.map((report, index) => {
+          reports.slice(0, 5).map((report, index) => {
             const { time, date } = formatDateTime(report.reportedAt);
             return (
               <View key={report._id} style={styles.voteItem}>
