@@ -1,26 +1,29 @@
 const mongoose = require('mongoose');
 
 const stationSchema = new mongoose.Schema({
-    station_name: {
+    name: {
         type: String,
         required: true,
         unique: true
     },
-    subway_lines: {
+    train_lines: {
         type: [String],
         required: true
     },
-    latitude: {
-        type: Number,
-        required: true
-    },
-    longitude: {
-        type: Number,
-        required: true
+    coordinates: {
+        latitude: {
+            type: Number,
+            required: true
+        },
+        longitude: {
+            type: Number,
+            required: true
+        }
     }
 }, {
     timestamps: true,
-    collection: 'boston_stations'
+    collection: 'stations'
 });
 
 module.exports = mongoose.model('Station', stationSchema);
+

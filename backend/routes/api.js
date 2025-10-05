@@ -3,6 +3,7 @@ const router = express.Router();
 
 const reportController = require('../controllers/reportConroller');
 const polylineController = require('../controllers/polylineController');
+const stationController = require('../controllers/stationController');
 
 // Report routes
 router.post('/reports', reportController.createReport);
@@ -14,5 +15,8 @@ router.get('/reports/:id', reportController.getReportById);
 // Polyline routes
 router.get('/polylines', polylineController.getAllPolylines);
 router.get('/polylines/route/:routeId', polylineController.getPolylinesByRoute);
+
+// Station routes
+router.get('/stations', stationController.getAllStations);
 
 module.exports = router;
