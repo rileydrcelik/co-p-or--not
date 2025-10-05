@@ -6,23 +6,11 @@ const reportSchema = new mongoose.Schema({
         required: true
     },
     station: {
-        name: {
-            type: String,
-            required: true
-        },
-
-        coordinates: {
-            latitude: {
-                type: Number,
-                required: true
-            },
-            longitude: {
-                type: Number,
-                required: true
-            }
-        }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Station',
+        required: true
     },
-        reportedAt: {
+    reportedAt: {
         type: Date,
         default: Date.now
     },

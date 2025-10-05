@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Polyline } from "react-native-maps";
 import * as Location from "expo-location";
 import CustomText from "../components/CustomText";
+import { fetchAllPolylines, PolylineShape } from "../services/api";
 
 // Dark mode map styling
 const darkMapStyle = [
@@ -108,9 +109,22 @@ const darkMapStyle = [
   }
 ];
 
+// Route colors for different subway lines
+const routeColors = {
+  'Red': '#DA020E',
+  'Orange': '#FF8C00',
+  'Blue': '#003DA5',
+  'Green-B': '#00843D',
+  'Green-C': '#00843D',
+  'Green-D': '#00843D',
+  'Green-E': '#00843D',
+};
+
 export default function MapScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [polylines, setPolylines] = useState<{ [routeId: string]: PolylineShape[] }>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -130,10 +144,53 @@ export default function MapScreen() {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await fetchAllPolylines();
+        setPolylines(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching polylines:', error);
+        setErrorMsg('Error loading subway lines');
+        setLoading(false);
+      }
+    })();
+  }, []);
+
   if (errorMsg) {
     return (
       <View style={styles.container}>
         <CustomText style={styles.errorText}>{errorMsg}</CustomText>
+      </View>
+    );
+  }
+
+  const renderPolylines = () => {
+    const allPolylines: JSX.Element[] = [];
+    
+    Object.entries(polylines).forEach(([routeId, shapes]) => {
+      shapes.forEach((shape, index) => {
+        allPolylines.push(
+          <Polyline
+            key={`${routeId}-${shape.shape_id}-${index}`}
+            coordinates={shape.coordinates}
+            strokeColor={routeColors[routeId as keyof typeof routeColors] || '#FFFFFF'}
+            strokeWidth={4}
+            lineCap="round"
+            lineJoin="round"
+          />
+        );
+      });
+    });
+    
+    return allPolylines;
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <CustomText style={styles.errorText}>Loading subway lines...</CustomText>
       </View>
     );
   }
@@ -154,7 +211,9 @@ export default function MapScreen() {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
-      />
+      >
+        {renderPolylines()}
+      </MapView>
     </View>
   );
 }
