@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import CustomText from './CustomText';
+import Report from './Report';
 
 type ReportStatus = "Cop" | "Not";
 
@@ -27,20 +28,11 @@ const ReportsBlock: React.FC<ReportsBlockProps> = ({ copPercentage, history }) =
           data={history}
           keyExtractor={(_, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={styles.historyItem}>
-              <View>
-                <CustomText style={{ color: "white" }}>{item.time}</CustomText>
-                <CustomText style={{ color: "gray", fontSize: 12 }}>{item.date}</CustomText>
-              </View>
-              <CustomText
-                style={{
-                  color: item.status === "Cop" ? "skyblue" : "tomato",
-                }}
-                bold
-              >
-                {item.status}
-              </CustomText>
-            </View>
+            <Report
+              time={item.time}
+              date={item.date}
+              status={item.status}
+            />
           )}
         />
       )}
@@ -61,12 +53,6 @@ const styles = StyleSheet.create({
   copPercent: {
     fontSize: 50,
     color: "skyblue",
-  },
-
-  historyItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 6,
   },
 });
 
