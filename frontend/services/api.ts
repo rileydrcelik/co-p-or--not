@@ -1,9 +1,5 @@
 // API service for fetching polyline data from backend
-<<<<<<< HEAD
 import { API_BASE_URL } from '../config';
-=======
-const API_BASE_URL = 'http://10.110.89.134:5001/api';
->>>>>>> f8f5b6ce8cb31ae12b54e1900e2edf75ff49a8c5
 
 export interface Coordinate {
   latitude: number;
