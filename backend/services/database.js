@@ -3,7 +3,6 @@ const config = require('../config');
 
 const connectDB = async () => {
     try {
-        // Use the MongoDB Atlas connection string from config
         const conn = await mongoose.connect(config.mongoURI, {
             serverApi: {
                 version: '1',

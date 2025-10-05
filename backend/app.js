@@ -5,17 +5,13 @@ const morgan = require('morgan');
 
 const app = express();
 
-// Middleware
-app.use(helmet()); // Security headers
-app.use(cors()); // Enable CORS
-app.use(morgan('combined')); // Logging
-app.use(express.json({ limit: '10mb' })); // Parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(helmet());
+app.use(cors());
+app.use(morgan('combined'));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
-// Import routes
 const routes = require('./routes');
-
-// Routes
 app.get('/', (req, res) => {
     res.json({ 
         message: 'Welcome to CoporNot API',
@@ -24,7 +20,6 @@ app.get('/', (req, res) => {
     });
 });
 
-// Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({ 
         status: 'OK',
@@ -32,10 +27,8 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Mount API routes
 app.use(routes);
 
-// Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ 
@@ -44,7 +37,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 404 handler
 app.use('*', (req, res) => {
     res.status(404).json({ 
         message: 'Route not found' 

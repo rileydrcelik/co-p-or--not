@@ -1,20 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   SafeAreaView,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import SearchBar from "../components/SearchBar";
 import StationCard from "../components/StationCard";
+import { fetchAllReports, fetchAllStations, Report, Station } from "../services/api";
 
-// Interface matching the Report.js database schema
-interface Report {
+// Interface for processed reports with Date objects (for StationCard compatibility)
+interface ProcessedReport {
   _id: string;
-  presence: boolean; // true = "Cop", false = "Not"
+  presence: boolean;
   station: {
+    _id: string;
     name: string;
+    train_lines: string[];
     coordinates: {
       latitude: number;
       longitude: number;
@@ -27,220 +31,93 @@ interface Report {
 
 // Interface for grouped station data with train lines
 interface StationWithReports {
-  
   id: string;
   name: string;
   lines: string[];
-  reports: Report[];
+  reports: ProcessedReport[];
 }
 
-// Mock data matching the database schema - replace with real data from your backend
-const mockReports: Report[] = [
-  {
-    _id: "1",
-    presence: true,
-    station: {
-      name: "Broad St",
-      coordinates: { latitude: 40.7012, longitude: -73.9954 }
-    },
-    reportedAt: new Date("2025-01-14T22:23:00Z"),
-    createdAt: new Date("2025-01-14T22:23:00Z"),
-    updatedAt: new Date("2025-01-14T22:23:00Z")
-  },
-  {
-    _id: "2",
-    presence: true,
-    station: {
-      name: "Broad St",
-      coordinates: { latitude: 40.7012, longitude: -73.9954 }
-    },
-    reportedAt: new Date("2025-01-14T22:15:00Z"),
-    createdAt: new Date("2025-01-14T22:15:00Z"),
-    updatedAt: new Date("2025-01-14T22:15:00Z")
-  },
-  {
-    _id: "3",
-    presence: false,
-    station: {
-      name: "Broad St",
-      coordinates: { latitude: 40.7012, longitude: -73.9954 }
-    },
-    reportedAt: new Date("2025-01-14T22:01:00Z"),
-    createdAt: new Date("2025-01-14T22:01:00Z"),
-    updatedAt: new Date("2025-01-14T22:01:00Z")
-  },
-  {
-    _id: "4",
-    presence: false,
-    station: {
-      name: "Church Ave",
-      coordinates: { latitude: 40.6455, longitude: -73.9795 }
-    },
-    reportedAt: new Date("2025-01-14T21:45:00Z"),
-    createdAt: new Date("2025-01-14T21:45:00Z"),
-    updatedAt: new Date("2025-01-14T21:45:00Z")
-  },
-  {
-    _id: "5",
-    presence: true,
-    station: {
-      name: "Church Ave",
-      coordinates: { latitude: 40.6455, longitude: -73.9795 }
-    },
-    reportedAt: new Date("2025-01-14T21:30:00Z"),
-    createdAt: new Date("2025-01-14T21:30:00Z"),
-    updatedAt: new Date("2025-01-14T21:30:00Z")
-  },
-  {
-    _id: "6",
-    presence: true,
-    station: {
-      name: "Times Sq-42 St",
-      coordinates: { latitude: 40.7589, longitude: -73.9851 }
-    },
-    reportedAt: new Date("2025-01-14T21:20:00Z"),
-    createdAt: new Date("2025-01-14T21:20:00Z"),
-    updatedAt: new Date("2025-01-14T21:20:00Z")
-  },
-  {
-    _id: "7",
-    presence: true,
-    station: {
-      name: "Times Sq-42 St",
-      coordinates: { latitude: 40.7589, longitude: -73.9851 }
-    },
-    reportedAt: new Date("2025-01-14T21:10:00Z"),
-    createdAt: new Date("2025-01-14T21:10:00Z"),
-    updatedAt: new Date("2025-01-14T21:10:00Z")
-  },
-  {
-    _id: "8",
-    presence: false,
-    station: {
-      name: "Times Sq-42 St",
-      coordinates: { latitude: 40.7589, longitude: -73.9851 }
-    },
-    reportedAt: new Date("2025-01-14T21:05:00Z"),
-    createdAt: new Date("2025-01-14T21:05:00Z"),
-    updatedAt: new Date("2025-01-14T21:05:00Z")
-  },
-  {
-    _id: "9",
-    presence: true,
-    station: {
-      name: "Times Sq-42 St",
-      coordinates: { latitude: 40.7589, longitude: -73.9851 }
-    },
-    reportedAt: new Date("2025-01-14T20:55:00Z"),
-    createdAt: new Date("2025-01-14T20:55:00Z"),
-    updatedAt: new Date("2025-01-14T20:55:00Z")
-  },
-  {
-    _id: "10",
-    presence: false,
-    station: {
-      name: "Union Sq-14 St",
-      coordinates: { latitude: 40.7357, longitude: -73.9909 }
-    },
-    reportedAt: new Date("2025-01-14T20:40:00Z"),
-    createdAt: new Date("2025-01-14T20:40:00Z"),
-    updatedAt: new Date("2025-01-14T20:40:00Z")
-  },
-  {
-    _id: "11",
-    presence: true,
-    station: {
-      name: "Union Sq-14 St",
-      coordinates: { latitude: 40.7357, longitude: -73.9909 }
-    },
-    reportedAt: new Date("2025-01-14T20:25:00Z"),
-    createdAt: new Date("2025-01-14T20:25:00Z"),
-    updatedAt: new Date("2025-01-14T20:25:00Z")
-  },
-  {
-    _id: "12",
-    presence: true,
-    station: {
-      name: "Grand Central-42 St",
-      coordinates: { latitude: 40.7518, longitude: -73.9769 }
-    },
-    reportedAt: new Date("2025-01-14T20:15:00Z"),
-    createdAt: new Date("2025-01-14T20:15:00Z"),
-    updatedAt: new Date("2025-01-14T20:15:00Z")
-  },
-  {
-    _id: "13",
-    presence: true,
-    station: {
-      name: "Grand Central-42 St",
-      coordinates: { latitude: 40.7518, longitude: -73.9769 }
-    },
-    reportedAt: new Date("2025-01-14T20:00:00Z"),
-    createdAt: new Date("2025-01-14T20:00:00Z"),
-    updatedAt: new Date("2025-01-14T20:00:00Z")
-  },
-  {
-    _id: "14",
-    presence: false,
-    station: {
-      name: "Grand Central-42 St",
-      coordinates: { latitude: 40.7518, longitude: -73.9769 }
-    },
-    reportedAt: new Date("2025-01-14T19:45:00Z"),
-    createdAt: new Date("2025-01-14T19:45:00Z"),
-    updatedAt: new Date("2025-01-14T19:45:00Z")
-  }
-];
 
-// Station to train lines mapping (this would come from a separate API or database table)
-const stationLinesMap: { [key: string]: string[] } = {
-  "Broad St": ["J", "Z"],
-  "Church Ave": ["F", "G"],
-  "Times Sq-42 St": ["1", "2", "3", "7", "N", "Q", "R", "W"],
-  "Union Sq-14 St": ["4", "5", "6", "L", "N", "Q", "R", "W"],
-  "Grand Central-42 St": ["4", "5", "6", "7"]
-};
-
-// Group reports by station and add train lines
-const groupReportsByStation = (reports: Report[]): StationWithReports[] => {
-  const stationMap = new Map<string, StationWithReports>();
-  
-  reports.forEach(report => {
-    const stationName = report.station.name;
-    
-    if (!stationMap.has(stationName)) {
-      stationMap.set(stationName, {
-        id: stationName.toLowerCase().replace(/\s+/g, '-'),
-        name: stationName,
-        lines: stationLinesMap[stationName] || [],
-        reports: []
-      });
-    }
-    
-    stationMap.get(stationName)!.reports.push(report);
-  });
-  
-  // Sort reports by reportedAt date (most recent first)
-  stationMap.forEach(station => {
-    station.reports.sort((a, b) => b.reportedAt.getTime() - a.reportedAt.getTime());
-  });
-  
-  return Array.from(stationMap.values());
-};
-
-const mockStations = groupReportsByStation(mockReports);
 
 
 export default function StatsScreen() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredStations, setFilteredStations] = useState(mockStations);
+  const [stations, setStations] = useState<StationWithReports[]>([]);
+  const [filteredStations, setFilteredStations] = useState<StationWithReports[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch stations and reports from API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch both stations and reports in parallel
+        const [stationsResponse, reportsResponse] = await Promise.all([
+          fetchAllStations(),
+          fetchAllReports(1, 100) // Get first 100 reports
+        ]);
+        
+        if (stationsResponse.success && reportsResponse.success) {
+          // Group reports by station
+          const reportsByStation = new Map<string, ProcessedReport[]>();
+          
+          reportsResponse.data.forEach(report => {
+            if (report.station && report.station.name) {
+              const stationName = report.station.name;
+              if (!reportsByStation.has(stationName)) {
+                reportsByStation.set(stationName, []);
+              }
+              
+              // Convert string dates to Date objects
+              const reportWithDateObjects: ProcessedReport = {
+                ...report,
+                reportedAt: new Date(report.reportedAt),
+                createdAt: new Date(report.createdAt),
+                updatedAt: new Date(report.updatedAt)
+              };
+              
+              reportsByStation.get(stationName)!.push(reportWithDateObjects);
+            }
+          });
+          
+          // Sort reports by date
+          reportsByStation.forEach(reports => {
+            reports.sort((a, b) => b.reportedAt.getTime() - a.reportedAt.getTime());
+          });
+          
+          // Create station objects with their reports
+          const stationsWithReports: StationWithReports[] = stationsResponse.data.map(station => ({
+            id: station._id,
+            name: station.name,
+            lines: station.train_lines || [],
+            reports: reportsByStation.get(station.name) || []
+          }));
+          
+          setStations(stationsWithReports);
+          setFilteredStations(stationsWithReports);
+        } else {
+          setError('Failed to load data');
+        }
+      } catch (err) {
+        console.error('Error loading data:', err);
+        setError('Failed to load data. Please check your connection.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query.trim() === "") {
-      setFilteredStations(mockStations);
+      setFilteredStations(stations);
     } else {
-      const filtered = mockStations.filter((station) =>
+      const filtered = stations.filter((station) =>
         station.name.toLowerCase().includes(query.toLowerCase()) ||
         station.lines.some(line => line.toLowerCase().includes(query.toLowerCase()))
       );
@@ -249,9 +126,29 @@ export default function StatsScreen() {
   };
 
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#ffffff" />
+          <Text style={styles.loadingText}>Loading stations...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-
       {/* Search Bar */}
       <SearchBar
         placeholder="Search stations..."
@@ -261,15 +158,21 @@ export default function StatsScreen() {
 
       {/* Stations List */}
       <ScrollView style={styles.stationsList} showsVerticalScrollIndicator={false}>
-        {filteredStations.map((station) => (
-          <StationCard
-            key={station.id}
-            id={station.id}
-            name={station.name}
-            lines={station.lines}
-            reports={station.reports}
-          />
-        ))}
+        {filteredStations.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No stations found</Text>
+          </View>
+        ) : (
+          filteredStations.map((station) => (
+            <StationCard
+              key={station.id}
+              id={station.id}
+              name={station.name}
+              lines={station.lines}
+              reports={station.reports}
+            />
+          ))
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -292,5 +195,36 @@ const styles = StyleSheet.create({
   stationsList: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "white",
+    fontSize: 16,
+    marginTop: 16,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 32,
+  },
+  errorText: {
+    color: "#ff6b6b",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 64,
+  },
+  emptyText: {
+    color: "#888",
+    fontSize: 16,
   },
 });
