@@ -40,6 +40,11 @@
         }
       ]
     ],
+    "config": {
+      "googleMaps": {
+        "apiKey": "AIzaSyBrsd4rmayaun4zNqQmkTWFuEOFG2hBfYA"
+      }
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
