@@ -1,5 +1,5 @@
 // API service for fetching polyline data from backend
-import { API_BASE_URL } from '../config';
+import { getApiUrl } from '../config';
 
 export interface Coordinate {
   latitude: number;
@@ -20,7 +20,7 @@ export interface PolylinesResponse {
 
 export const fetchAllPolylines = async (): Promise<PolylinesResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/polylines`);
+    const response = await fetch(`${getApiUrl()}/polylines`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -33,7 +33,7 @@ export const fetchAllPolylines = async (): Promise<PolylinesResponse> => {
 
 export const fetchPolylinesByRoute = async (routeId: string): Promise<{ success: boolean; data: PolylineShape[] }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/polylines/route/${routeId}`);
+    const response = await fetch(`${getApiUrl()}/polylines/route/${routeId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -78,7 +78,7 @@ export interface ReportsResponse {
 // Report API functions
 export const fetchAllReports = async (page: number = 1, limit: number = 50): Promise<ReportsResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/reports?page=${page}&limit=${limit}&sortBy=reportedAt&sortOrder=desc`);
+    const response = await fetch(`${getApiUrl()}/reports?page=${page}&limit=${limit}&sortBy=reportedAt&sortOrder=desc`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -91,7 +91,7 @@ export const fetchAllReports = async (page: number = 1, limit: number = 50): Pro
 
 export const fetchReportsByPresence = async (presence: boolean): Promise<ReportsResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/reports/presence/${presence}`);
+    const response = await fetch(`${getApiUrl()}/reports/presence/${presence}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -102,15 +102,15 @@ export const fetchReportsByPresence = async (presence: boolean): Promise<Reports
   }
 };
 
-export const fetchReportsByStation = async (stationName: string): Promise<ReportsResponse> => {
+export const fetchReportsByStation = async (stationId: string): Promise<ReportsResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/reports/station/${encodeURIComponent(stationName)}`);
+    const response = await fetch(`${getApiUrl()}/reports/station/${stationId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
   } catch (error) {
-    console.error(`Error fetching reports for station ${stationName}:`, error);
+    console.error(`Error fetching reports for station ${stationId}:`, error);
     throw error;
   }
 };
@@ -137,7 +137,7 @@ export interface StationsResponse {
 // Station API functions
 export const fetchAllStations = async (): Promise<StationsResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/stations`);
+    const response = await fetch(`${getApiUrl()}/stations`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -150,7 +150,7 @@ export const fetchAllStations = async (): Promise<StationsResponse> => {
 
 export const fetchNearestStation = async (latitude: number, longitude: number): Promise<{ success: boolean; data: { station: Station } }> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/stations/nearest?lat=${latitude}&lng=${longitude}`);
+    const response = await fetch(`${getApiUrl()}/stations/nearest?lat=${latitude}&lng=${longitude}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -176,7 +176,7 @@ export interface CreateReportResponse {
 // Create report API function
 export const createReport = async (presence: boolean, stationId: string): Promise<CreateReportResponse> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/reports`, {
+    const response = await fetch(`${getApiUrl()}/reports`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
