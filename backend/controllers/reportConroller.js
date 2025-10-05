@@ -250,8 +250,8 @@ const getReportsByPresence = async (req, res) => {
  */
 const getReportsByStation = async (req, res) => {
     try {
-        const { stationName } = req.params;
-        const reports = await Report.find({ 'station.name': stationName })
+        const { stationId } = req.params;
+        const reports = await Report.find({ station: stationId })
             .populate('station', 'name train_lines coordinates')
             .sort({ reportedAt: -1 });
 
