@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const Station = require('../models/Station');
 const config = require('../config');
 
-// Connect to MongoDB
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI);
@@ -15,7 +14,6 @@ const connectDB = async () => {
     }
 };
 
-// Upload stations from cleaned CSV
 const uploadStations = async (csvFilePath) => {
     const stations = [];
     
@@ -23,21 +21,26 @@ const uploadStations = async (csvFilePath) => {
         fs.createReadStream(csvFilePath)
             .pipe(csv())
             .on('data', (row) => {
-                // Skip empty rows
                 if (!row.station_name || !row.latitude || !row.longitude) {
                     return;
                 }
                 
-                // Parse subway lines (comma-separated, already cleaned)
                 const subwayLines = row.subway_lines ? 
                     row.subway_lines.split(',').map(line => line.trim()) : [];
+                
+                const latitude = parseFloat(row.latitude);
+                const longitude = parseFloat(row.longitude);
                 
                 stations.push({
                     name: row.station_name.trim(),
                     train_lines: subwayLines,
                     coordinates: {
-                        latitude: parseFloat(row.latitude),
-                        longitude: parseFloat(row.longitude)
+                        latitude: latitude,
+                        longitude: longitude
+                    },
+                    location: {
+                        type: 'Point',
+                        coordinates: [longitude, latitude]
                     }
                 });
             })
@@ -45,15 +48,12 @@ const uploadStations = async (csvFilePath) => {
                 try {
                     console.log(`Processing ${stations.length} stations...`);
                     
-                    // Clear existing stations
                     await Station.deleteMany({});
                     console.log('Cleared existing stations');
                     
-                    // Insert new stations
                     const result = await Station.insertMany(stations);
                     console.log(`Successfully uploaded ${result.length} stations`);
                     
-                    // Show some examples
                     console.log('\nSample stations uploaded:');
                     result.slice(0, 5).forEach(station => {
                         console.log(`- ${station.name}: ${station.train_lines.join(', ')}`);

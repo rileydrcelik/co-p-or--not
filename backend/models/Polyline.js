@@ -29,7 +29,6 @@ const polylineSchema = new mongoose.Schema({
     collection: 'boston_polylines'
 });
 
-// Create compound index for efficient queries
 polylineSchema.index({ route_id: 1, shape_id: 1 });
 
 module.exports = mongoose.model('Polyline', polylineSchema);
