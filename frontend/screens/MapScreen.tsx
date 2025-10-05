@@ -6,6 +6,192 @@ import CustomText from "../components/CustomText";
 import { fetchAllPolylines, PolylineShape } from "../services/api";
 
 // Dark mode map styling
+const darkMapStyle = [
+  {
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#212121"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#212121"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.country",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#9e9e9e"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.land_parcel",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "administrative.locality",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#bdbdbd"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#181818"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "featureType": "poi.park",
+    "elementType": "labels.text.stroke",
+    "stylers": [
+      {
+        "color": "#1b1b1b"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry.fill",
+    "stylers": [
+      {
+        "color": "#2c2c2c"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#8a8a8a"
+      }
+    ]
+  },
+  {
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#373737"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#3c3c3c"
+      }
+    ]
+  },
+  {
+    "featureType": "road.highway.controlled_access",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#4e4e4e"
+      }
+    ]
+  },
+  {
+    "featureType": "road.local",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#616161"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#757575"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#000000"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "labels.text.fill",
+    "stylers": [
+      {
+        "color": "#3d3d3d"
+      }
+    ]
+  }
+];
 
 // Route colors for different subway lines
 const routeColors = {
@@ -74,29 +260,39 @@ export default function MapScreen() {
   const getMBTAColorBySuffix = (shapeId: string) => {
     // Remove 'canonical-' prefix to get the suffix
     const suffix = shapeId.replace('canonical-', '');
+    console.log(`Shape ID: ${shapeId} -> Suffix: ${suffix}`);
     
     const colorMapping: Record<string, string> = {
-      "8000005": "#00843D", // Green
-      "8000006": "#00843D", // Green
-      "8000008": "#FF69B4", // Pink
-      "8000009": "#00843D", // Green
-      "8000012": "#00843D", // Green
-      "8000013": "#00843D", // Green
-      "8000015": "#00843D", // Green
-      "8000018": "#00843D", // Green
+      // Green Line branches - all use MBTA Green
+      "8000005": "#00843D", // Green-C
+      "8000006": "#00843D", // Green-C
+      "8000008": "#00843D", // Green-D
+      "8000009": "#00843D", // Green-D
+      "8000012": "#00843D", // Green-B
+      "8000013": "#00843D", // Green-B
+      "8000015": "#00843D", // Green-E
+      "8000018": "#00843D", // Green-E
+      
+      // Red Line - MBTA Red
       "899_0005": "#DA020E", // Red
-      "903_0008": "#20B2AA", // Teal
-      "903_0017": "#FF8C00", // Orange
-      "903_0018": "#FF8C00", // Orange
       "931_0009": "#DA020E", // Red
       "931_0010": "#DA020E", // Red
       "933_0009": "#DA020E", // Red
       "933_0010": "#DA020E", // Red
+      
+      // Orange Line - MBTA Orange
+      "903_0008": "#FF8C00", // Orange
+      "903_0017": "#FF8C00", // Orange
+      "903_0018": "#FF8C00", // Orange
+      
+      // Blue Line - MBTA Blue
       "946_0013": "#003DA5", // Blue
       "946_0014": "#003DA5", // Blue
     };
     
-    return colorMapping[suffix] || "#FFFFFF";
+    const color = colorMapping[suffix] || "#FFFFFF";
+    console.log(`Color for ${suffix}: ${color}`);
+    return color;
   }
 
   const renderPolylines = () => {
@@ -109,12 +305,14 @@ export default function MapScreen() {
       console.log(`Color for route "${routeId}":`, routeColors[routeId as keyof typeof routeColors]);
       shapes.forEach((shape, index) => {
         console.log(`Shape ${shape.shape_id} has ${shape.coordinates.length} coordinates`);
+        const color = getMBTAColorBySuffix(shape.shape_id) || '#FFFFFF';
+        console.log(`Applying color ${color} to shape ${shape.shape_id}`);
         allPolylines.push(
           <Polyline
             key={`${routeId}-${shape.shape_id}-${index}`}
             coordinates={shape.coordinates}
-            strokeColor={getMBTAColorBySuffix(shape.shape_id) || '#FFFFFF'}
-            strokeWidth={4}
+            strokeColor={color}
+            strokeWidth={8}
             lineCap="round"
             lineJoin="round"
           />
@@ -139,6 +337,7 @@ export default function MapScreen() {
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
+        customMapStyle={darkMapStyle}
         showsUserLocation={true}
         showsMyLocationButton={true}
         showsCompass={true}
