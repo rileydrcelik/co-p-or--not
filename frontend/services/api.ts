@@ -147,3 +147,53 @@ export const fetchAllStations = async (): Promise<StationsResponse> => {
     throw error;
   }
 };
+
+export const fetchNearestStation = async (latitude: number, longitude: number): Promise<{ success: boolean; data: { station: Station } }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/stations/nearest?lat=${latitude}&lng=${longitude}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching nearest station:', error);
+    throw error;
+  }
+};
+
+// Create report interface
+export interface CreateReportRequest {
+  presence: boolean;
+  station: string; // Station ID
+}
+
+export interface CreateReportResponse {
+  success: boolean;
+  message: string;
+  data: Report;
+}
+
+// Create report API function
+export const createReport = async (presence: boolean, stationId: string): Promise<CreateReportResponse> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/reports`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        presence,
+        station: stationId
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating report:', error);
+    throw error;
+  }
+};

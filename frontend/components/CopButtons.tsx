@@ -1,28 +1,60 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import CustomText from './CustomText';
 
 type ReportStatus = "Cop" | "Not";
 
 interface CopButtonsProps {
   onReport: (status: ReportStatus) => void;
+  disabled?: boolean;
+  reporting?: boolean;
 }
 
-const CopButtons: React.FC<CopButtonsProps> = ({ onReport }) => {
+const CopButtons: React.FC<CopButtonsProps> = ({ onReport, disabled = false, reporting = false }) => {
+  const handlePress = (status: ReportStatus) => {
+    if (!disabled && !reporting) {
+      onReport(status);
+    }
+  };
+
+  const getButtonStyle = (baseColor: string) => {
+    if (disabled) {
+      return [styles.button, { backgroundColor: "#666666", opacity: 0.5 }];
+    }
+    if (reporting) {
+      return [styles.button, { backgroundColor: baseColor, opacity: 0.7 }];
+    }
+    return [styles.button, { backgroundColor: baseColor }];
+  };
+
   return (
     <View style={styles.buttonRow}>
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: "blue" }]}
-        onPress={() => onReport("Cop")}
+        style={getButtonStyle("#4A9EFF")}
+        onPress={() => handlePress("Cop")}
+        disabled={disabled || reporting}
       >
-        <CustomText style={styles.buttonText} bold>Cop</CustomText>
+        {reporting ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <CustomText style={styles.buttonText} bold>
+            {disabled ? "Reported" : "Cop"}
+          </CustomText>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: "red" }]}
-        onPress={() => onReport("Not")}
+        style={getButtonStyle("#FF6B6B")}
+        onPress={() => handlePress("Not")}
+        disabled={disabled || reporting}
       >
-        <CustomText style={styles.buttonText} bold>Not</CustomText>
+        {reporting ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <CustomText style={styles.buttonText} bold>
+            {disabled ? "Reported" : "Not"}
+          </CustomText>
+        )}
       </TouchableOpacity>
     </View>
   );
