@@ -46,8 +46,8 @@ const getAllPolylines = async (req, res) => {
             groupedPolylines[polyline.route_id].push({
                 shape_id: polyline.shape_id,
                 coordinates: polyline.coordinates.map(coord => ({
-                    lat: coord.latitude,
-                    lng: coord.longitude
+                    latitude: coord.latitude,
+                    longitude: coord.longitude
                 }))
             });
         });
@@ -106,8 +106,8 @@ const getPolylinesByRoute = async (req, res) => {
         const formattedPolylines = polylines.map(polyline => ({
             shape_id: polyline.shape_id,
             coordinates: polyline.coordinates.map(coord => ({
-                lat: coord.latitude,
-                lng: coord.longitude
+                latitude: coord.latitude,
+                longitude: coord.longitude
             }))
         }));
         

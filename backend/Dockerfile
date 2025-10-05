@@ -1,7 +1,7 @@
 FROM node:22
-WORKDIR ./
+WORKDIR /app
 COPY package*.json ./
-EXPOSE 5000
 RUN npm install
-COPY . .
-CMD ["node","server.js"]
+COPY backend/ ./
+EXPOSE 5000
+CMD ["node", "server.js"]
