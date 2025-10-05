@@ -96,6 +96,7 @@ const getAllReports = async (req, res) => {
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
         const reports = await Report.find()
+            .populate('station', 'name train_lines coordinates')
             .sort(sort)
             .limit(limit * 1)
             .skip((page - 1) * limit)
@@ -153,7 +154,7 @@ const getAllReports = async (req, res) => {
  */
 const getReportById = async (req, res) => {
     try {
-        const report = await Report.findById(req.params.id);
+        const report = await Report.findById(req.params.id).populate('station', 'name train_lines coordinates');
         
         if (!report) {
             return res.status(404).json({
@@ -204,7 +205,9 @@ const getReportById = async (req, res) => {
 const getReportsByPresence = async (req, res) => {
     try {
         const { presence } = req.params;
-        const reports = await Report.find({ presence: presence === 'true' }).sort({ reportedAt: -1 });
+        const reports = await Report.find({ presence: presence === 'true' })
+            .populate('station', 'name train_lines coordinates')
+            .sort({ reportedAt: -1 });
 
         res.json({
             success: true,
@@ -248,7 +251,9 @@ const getReportsByPresence = async (req, res) => {
 const getReportsByStation = async (req, res) => {
     try {
         const { stationName } = req.params;
-        const reports = await Report.find({ 'station.name': stationName }).sort({ reportedAt: -1 });
+        const reports = await Report.find({ 'station.name': stationName })
+            .populate('station', 'name train_lines coordinates')
+            .sort({ reportedAt: -1 });
 
         res.json({
             success: true,
