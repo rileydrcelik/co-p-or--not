@@ -7,7 +7,7 @@ export default function NopeButton({ onPress }) {
     <TouchableOpacity style={styles.notButton} onPress={onPress}>
       <View style={styles.textContainer}>
         <Text style={styles.statusText}>Not</Text>
-        <Text style={styles.subText}>lets fucking go</Text>
+        <Text style={styles.subText}>Your response has been recorded</Text>
       </View>
     </TouchableOpacity>
   );
@@ -15,11 +15,11 @@ export default function NopeButton({ onPress }) {
 
 const styles = StyleSheet.create({
   notButton: {
-    backgroundColor: "#323233cc", // Matches your screenshot’s purple tone
+    backgroundColor: "#323233cc", 
     borderRadius: 90, //35
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 70, // Big button height
+    paddingVertical: 120, // Big button height
     width: "90%",
     alignSelf: "center",
     shadowColor: "#000",
@@ -27,18 +27,20 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 10, height: 30 },// 0/3
     shadowRadius: 6,
     elevation: 4,
+
   },
   textContainer: {
     alignItems: "center",
   },
   statusText: {
     color: "#afa9b5ff",
-    fontSize: 90, //36
+    fontSize: 100, //36
     fontWeight: "bold",
+    fontFamily: "Helvetica",
   },
   subText: {
     color: "#8E869A",
-    fontSize: 40,
+    fontSize: 20,
     marginTop: 6,
   },
 });
